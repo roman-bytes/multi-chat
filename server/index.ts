@@ -23,6 +23,7 @@ import morgan from 'morgan'
 import { Server } from 'socket.io'
 import { createServer } from 'http';
 import { LiveChat } from 'youtube-chat';
+import { WebcastPushConnection } from "tiktok-live-connector";
 
 installGlobals()
 
@@ -49,11 +50,11 @@ const httpServer = createServer(app)
 const io = new Server(httpServer)
 
 // timmeh
-const liveChat = new LiveChat({ channelId: "UCfv2ziw1AgiuOal6scGEs-w"});
+// const liveChat = new LiveChat({ channelId: "UCfv2ziw1AgiuOal6scGEs-w"});
 // const liveChat = new LiveChat({ liveId: "HqVi49k7plQ" });
 
 // bearded
-// const liveChat = new LiveChat({ channelId: "UCBL6O9LP0X2Us4E6CfwE_PQ"});
+const liveChat = new LiveChat({ channelId: "UCBL6O9LP0X2Us4E6CfwE_PQ"});
 
 // Start fetch loop
 const ok = liveChat.start();
@@ -61,14 +62,45 @@ if (!ok) {
 	console.log("Failed to start, check emitted error");
 }
 
+const tiktokUsername = 'beardedblevins';
+const tiktokLiveConnector = new WebcastPushConnection(tiktokUsername);
+
+
+// tiktokLiveConnector.on('message', (message) => {
+//     setMessages((prevMessages) => [...prevMessages, message]);
+// });
+
+tiktokLiveConnector.connect().then(state => {
+	console.info(`Connected to roomId ${state.roomId}`);
+}).catch(err => {
+	console.error('Failed to connect', err);
+})
+
+
+
 io.on("connection", (socket) => {
 	console.log(socket.id, "connected");
 	socket.emit("confirmation", "connected!");
 	liveChat.on("chat", (chatItem) => {
+		console.log('chatItem', chatItem);
 		if (!chatItem) {
 			return
 		}
-		socket.broadcast.emit("serverMsg", `YT-[${chatItem.author.name}]: ${chatItem.message[0].text}`);
+		socket.broadcast.emit("ytmsg", {
+			username: chatItem.author.name,
+			message: chatItem.message[0].text,
+			platform: "YOUTUBE",
+			member: chatItem.isMembership,
+		});
+	});
+	tiktokLiveConnector.on('chat', data => {
+		console.log('====DATA===TIKTOK====', data);
+		socket.broadcast.emit("tiktokmsg", {
+			username: data.nickname,
+			message: data.comment,
+			platform: "TIKTOK",
+			member: data.isSubscriber,
+		});
 	})
 })
 
