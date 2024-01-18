@@ -49,29 +49,31 @@ const httpServer = createServer(app)
 
 const io = new Server(httpServer)
 
+/**
+ * YOUTUBE STREAMER
+ */
 // timmeh
-// const liveChat = new LiveChat({ channelId: "UCfv2ziw1AgiuOal6scGEs-w"});
+const liveChat = new LiveChat({ channelId: "UCfv2ziw1AgiuOal6scGEs-w"});
 // const liveChat = new LiveChat({ liveId: "HqVi49k7plQ" });
-
 // bearded
-const liveChat = new LiveChat({ channelId: "UCBL6O9LP0X2Us4E6CfwE_PQ"});
+// const liveChat = new LiveChat({ channelId: "UCBL6O9LP0X2Us4E6CfwE_PQ" });
+// const liveChat = new LiveChat( { liveId: "xBLbxT584xc" });
+// Pirate
+// const liveChat = new LiveChat({ channelId: 'UCMnULQ6F6kLDAHxofDWIbrw'})
+// Ninja
+// const liveChat = new LiveChat({ channelId: 'UCAW-NpUFkMyCNrvRSSGIvDQ' });
 
-// Start fetch loop
-const ok = liveChat.start();
-if (!ok) {
-	console.log("Failed to start, check emitted error");
-}
-
-const tiktokUsername = 'beardedblevins';
+/**
+ * TIKTOK STREAMER
+ */
+// const tiktokUsername = '@beardedblevins';
+// const tiktokUsername = '@ninja';
 const tiktokLiveConnector = new WebcastPushConnection(tiktokUsername);
 
 
-// tiktokLiveConnector.on('message', (message) => {
-//     setMessages((prevMessages) => [...prevMessages, message]);
-// });
 
 tiktokLiveConnector.connect().then(state => {
-	console.info(`Connected to roomId ${state.roomId}`);
+	console.info(`TIKTOK: Connected to roomId ${state.roomId}`);
 }).catch(err => {
 	console.error('Failed to connect', err);
 })
@@ -79,13 +81,10 @@ tiktokLiveConnector.connect().then(state => {
 
 
 io.on("connection", (socket) => {
-	console.log(socket.id, "connected");
+	console.log(socket.id, "YOUTUBE - connected");
 	socket.emit("confirmation", "connected!");
 	liveChat.on("chat", (chatItem) => {
-		console.log('chatItem', chatItem);
-		if (!chatItem) {
-			return
-		}
+		console.log('chatItem-youtube', chatItem);
 		socket.broadcast.emit("ytmsg", {
 			username: chatItem.author.name,
 			message: chatItem.message[0].text,
@@ -104,6 +103,12 @@ io.on("connection", (socket) => {
 	})
 })
 
+
+
+const ok = await liveChat.start()
+if (!ok) {
+	console.log("Failed to start, check emitted error")
+}
 
 const getHost = (req: { get: (key: string) => string | undefined }) =>
 	req.get('X-Forwarded-Host') ?? req.get('host') ?? ''

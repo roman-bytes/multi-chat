@@ -278,11 +278,11 @@ function App() {
 				</div>
 
 				<div className="container flex justify-between pb-5">
-					<Link to="/">
-						<div className="font-light">epic</div>
-						<div className="font-bold">notes</div>
-					</Link>
-					<ThemeSwitch userPreference={data.requestInfo.userPrefs.theme} />
+					{/*<Link to="/">*/}
+					{/*	<div className="font-light">epic</div>*/}
+					{/*	<div className="font-bold">notes</div>*/}
+					{/*</Link>*/}
+					{/*<ThemeSwitch userPreference={data.requestInfo.userPrefs.theme} />*/}
 				</div>
 			</div>
 			<Confetti id={data.confettiId} />
