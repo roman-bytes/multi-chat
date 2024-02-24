@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import Client from "comfy.js";
 import { useSocket } from "#app/context.tsx";
 
-function useChatScroll<T>(dep: T): React.MutableRefObject<HTMLDivElement> {
+function useChatScroll<T>(dep: T): React.MutableRefObject<HTMLDivElement | undefined> {
     const ref = React.useRef<HTMLDivElement>();
     React.useEffect(() => {
         if (ref.current) {
@@ -19,7 +19,6 @@ export default function ChatRoute() {
     const ref = useChatScroll(messages)
     console.log('messages', messages);
 
-    // Youtube Chat
     useEffect(() => {
         if (!socket) return;
 
@@ -43,9 +42,9 @@ export default function ChatRoute() {
     useEffect(() => {
         // Streamers
         // timmeh
-        const twitchUsername = 'darkness429';
+        // const twitchUsername = 'darkness429';
         // bearded blevins
-        // const twitchUsername = 'beardedblevins';
+        const twitchUsername = 'beardedblevins';
         // Pirate
         // const twitchUsername = 'piratesoftware';
         // NINJA

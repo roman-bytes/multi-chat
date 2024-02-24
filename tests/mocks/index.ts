@@ -16,7 +16,7 @@ export const server = setupServer(
 	...githubHandlers,
 )
 
-server.listen({ onUnhandledRequest: 'warn' })
+server.listen({ onUnhandledRequest: 'bypass' })
 
 if (process.env.NODE_ENV !== 'test') {
 	console.info('🔶 Mock server installed')
